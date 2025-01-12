@@ -220,6 +220,78 @@ local Themes = {
 }
 
 -- // Utility Functions
+-- Circular Text Settings
+local fullText = "SW RESELLING SW RESELLING"  -- The text to display
+local radius = 100  -- Radius of the circle
+local centerX = 0.5  -- X position (normalized)
+local centerY = 0.5  -- Y position (normalized)
+local rotationSpeed = 50  -- Degrees per second
+local duration = 5  -- Duration (in seconds) before fading starts
+local fadeTime = 2  -- Duration (in seconds) for the fade-out effect
+
+-- Create a frame to hold the circular text
+local circularFrame = Instance.new("Frame", Window.MainFrame)  -- Attach to the main UI window
+circularFrame.Size = UDim2.new(0, 0, 0, 0)  -- Invisible, only acts as a holder
+circularFrame.Position = UDim2.new(centerX, 0, centerY, 0)
+circularFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+circularFrame.BackgroundTransparency = 1
+
+-- Split the text into individual letters and position them around the circle
+local letters = {}
+local totalLength = #fullText
+local angleIncrement = 360 / totalLength  -- Angle between each letter
+
+local currentAngle = 0
+for i = 1, totalLength do
+    local letter = string.sub(fullText, i, i)
+
+    local label = Instance.new("TextLabel", circularFrame)
+    label.Size = UDim2.new(0, 15, 0, 15)  -- Adjusted size for each letter
+    label.BackgroundTransparency = 1
+    label.Text = letter
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.Font = Enum.Font.SourceSansBold
+    label.TextSize = 18
+
+    local angle = math.rad(currentAngle)  -- Convert to radians
+    label.Position = UDim2.new(0.5, math.cos(angle) * radius, 0.5, -math.sin(angle) * radius)
+    label.AnchorPoint = Vector2.new(0.5, 0.5)
+    table.insert(letters, label)
+
+    -- Increment the angle for the next letter
+    currentAngle = currentAngle + angleIncrement
+end
+
+-- Function to rotate the circular text
+local startTime = tick()
+local isFading = false
+
+game:GetService("RunService").RenderStepped:Connect(function(deltaTime)
+    -- Calculate elapsed time
+    local elapsedTime = tick() - startTime
+
+    -- Rotate the text
+    for i, label in ipairs(letters) do
+        local angle = math.rad((i - 1) * angleIncrement + (rotationSpeed * elapsedTime))
+        label.Position = UDim2.new(0.5, math.cos(angle) * radius, 0.5, -math.sin(angle) * radius)
+    end
+
+    -- Start fading out after the duration
+    if elapsedTime > duration and not isFading then
+        isFading = true
+        for _, label in ipairs(letters) do
+            -- Tween each letter to fade out
+            local tween = game:GetService("TweenService"):Create(label, TweenInfo.new(fadeTime), {TextTransparency = 1})
+            tween:Play()
+        end
+
+        -- Remove the GUI after fade-out
+        task.delay(fadeTime, function()
+            circularFrame:Destroy()
+        end)
+    end
+end)
+
 do
     function Utility:Tween(Instance, Properties, Duration, ...)
         local TweenInfo = TweenInfo.new(Duration, ...)
