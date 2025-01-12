@@ -335,14 +335,14 @@ do
             local Text = Text or 'Text'
             local Duration = Duration or 5
 
-            if not CoreGui:FindFirstChild('Visual UI Library | .gg/puxxCphTnK | Notifications') then
+            if not CoreGui:FindFirstChild('Vial UI Library | .gg/puxxCphTnK | Notifications') then
                 Utility:Create('ScreenGui', {
                     Name = 'al UI Library | .gg/puxxCphTnK | Notifications',
                     Parent = CoreGui
                 })
             else
                 Utility:Create('Frame', {
-                    Parent = CoreGui:FindFirstChild('Visual UI Library | .gg/puxxCphTnK | Notifications'),
+                    Parent = CoreGui:FindFirstChild('Visl UI Library | .gg/puxxCphTnK | Notifications'),
                     Name = 'Notification'..tostring(Amount + 1),
                     BackgroundColor3 = Theme.BackgroundColor,
                     BorderSizePixel = 0,
@@ -956,7 +956,7 @@ function Library:ToggleUI()
 end
 
 function Library:SetTransparency(Transparency, NotificationBool)
-    local UI = CoreGui:WaitForChild('Visual UI Library | .gg/puxxCphTnK')
+    local UI = CoreGui:WaitForChild('Vua UI Library | .gg/puxxCphTnK')
     local Blacklist = {
         'UIPadding',
         'UICorner',
