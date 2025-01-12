@@ -1,0 +1,56 @@
+-- If shouldRain is true, then we proceed with the rain effect setup
+if shouldRain then
+    -- Create ScreenGui for the rain effect
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Parent = game:GetService("CoreGui")
+
+    -- Configuration for the rain effect
+    local duration = 6 -- Duration of the rain effect in seconds (same as your loading animation)
+    local numRaindrops = 50 -- Number of raindrops
+    local rainSpeed = 500 -- Speed of the raindrops (pixels per second)
+    local assetId = "rbxassetid://616395480" -- The asset ID for the raindrop image
+    local startTime = tick()
+
+    -- Get screen size
+    local screenWidth = workspace.CurrentCamera.ViewportSize.X
+    local screenHeight = workspace.CurrentCamera.ViewportSize.Y
+
+    -- Function to create a raindrop
+    local function createRaindrop()
+        local raindrop = Instance.new("ImageLabel")
+        raindrop.Parent = screenGui
+        raindrop.Size = UDim2.new(0, 200, 0, 200) -- Set size for the raindrop image (you can adjust this)
+        raindrop.Image = assetId -- Set the image to the asset ID
+        raindrop.Position = UDim2.new(0, math.random(0, screenWidth), 0, math.random(-screenHeight, 0)) -- Random starting position
+        raindrop.BackgroundTransparency = 1 -- No background for the raindrop
+        return raindrop
+    end
+
+    -- Create raindrops and store them in a table
+    local raindrops = {}
+    for i = 1, numRaindrops do
+        table.insert(raindrops, createRaindrop())
+    end
+
+    -- Rain effect (runs for 5 seconds)
+    local function runRainEffect()
+        while tick() - startTime < duration do
+            for _, raindrop in ipairs(raindrops) do
+                -- Move raindrop down
+                local newY = raindrop.Position.Y.Offset + rainSpeed * 0.03 -- Calculate new Y position
+                raindrop.Position = UDim2.new(0, raindrop.Position.X.Offset, 0, newY)
+
+                -- If raindrop reaches the bottom, reset to the top
+                if newY > screenHeight then
+                    raindrop.Position = UDim2.new(0, math.random(0, screenWidth), 0, -30) -- Reset to the top with a random horizontal position
+                end
+            end
+            wait(0.03) -- Smooth animation
+        end
+        -- Cleanup after the effect
+        screenGui:Destroy()
+    end
+
+    -- Start the rain effect in the background
+    spawn(runRainEffect)
+end
